@@ -1,2 +1,3 @@
-# bsl-orm
+# nextorm
+
 ORM based on better-sqlite3

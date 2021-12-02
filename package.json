@@ -1,0 +1,31 @@
+{
+  "name": "nextorm",
+  "version": "1.0.0",
+  "description": "ORM based on better-sqlite3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node ./src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wyesoftware/nextorm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wyesoftware/nextorm/issues"
+  },
+  "homepage": "https://nextorm.io",
+  "dependencies": {
+    "better-sqlite3": "^7.4.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.4.1",
+    "@types/node": "^16.11.11",
+    "commander": "^8.3.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}
