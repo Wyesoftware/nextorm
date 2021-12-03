@@ -1,19 +1,20 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "moduleResolution": "node",
-    "lib": ["ES2020"],
+    "lib": ["es2018"],
     "module": "commonjs",
-    "target": "ESNext",
-    "baseUrl": ".",
+    "target": "es2018",
+    "skipLibCheck": true,
+    "paths": {
+      "*": ["./node_modules/*"]
+    },
     "typeRoots": ["node_modules/@types"],
     "outDir": "./dist"
   },
-  "include": ["./**/*.ts"],
-  "exclude": ["node_modules", "nextorm"]
+  "include": ["./**/*.ts", "./*.ts"],
+  "exclude": ["node_modules"]
 }

@@ -1,5 +1,5 @@
 import { program } from "commander";
-import { migrate } from "./migration";
+import { migrate } from "./engines/migration";
 
 program.version("0.0.1").name("nextorm").usage("[command]");
 program
