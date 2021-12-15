@@ -1,6 +1,6 @@
 {
   "name": "@wyesoftware/nextorm",
-  "version": "0.0.12-beta",
+  "version": "0.0.1",
   "description": "Next level ORM",
   "bin": {
     "nextorm": "dist/index.js"
