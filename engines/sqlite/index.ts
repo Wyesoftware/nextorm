@@ -1,4 +1,4 @@
-import { IMigration, Schema } from "./types";
+import { IMigration, Schema } from "../../types";
 import fs from "fs";
 import dayjs from "dayjs";
 
@@ -7,9 +7,7 @@ export const migrate = async ({
   database,
   force = false,
 }: IMigration = {}) => {
-  const {
-    Database,
-  }: { Database: Schema } = require(`${__dirname}/../../data/schema.ts`);
+  const { Database }: { Database: Schema } = require(schema);
 
   let data: string = "";
   const tables = Object.keys(Database);

@@ -9,6 +9,7 @@
     "module": "commonjs",
     "target": "es2018",
     "skipLibCheck": true,
+    "declaration": true,
     "paths": {
       "*": ["./node_modules/*"]
     },
@@ -16,5 +17,5 @@
     "outDir": "./dist"
   },
   "include": ["./**/*.ts", "./*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "data"]
 }
