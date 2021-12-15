@@ -4,7 +4,7 @@ Next level ORM for popular databases
 
 ### TypeScript
 
-This component has full typescript support.
+This module has full typescript support.
 
 ## Install package
 
@@ -21,19 +21,19 @@ yarn add @wyesoftware/nextorm
 Generate mongo models from custom schema placed in `${project}/nextorm/model.ts(.js)` with output in `${project}/nextorm/generated/nextorm.ts(.js)`:
 
 ```bash
-yarn nextorm mongo:generate
+nextorm mongo:generate
 ```
 
 Generate mongo models from custom schema placed in `${customPath}` with output in `${customPath}/generated/nextorm.ts(.js)`:
 
 ```bash
-yarn nextorm mongo:generate --model ${customPath}
+nextorm mongo:generate --model ${customPath}
 ```
 
 Also you can change output path to custom path:
 
 ```bash
-yarn nextorm mongo:generate --model ${customPath} --output ${outputPath}
+nextorm mongo:generate --model ${customPath} --output ${outputPath}
 ```
 
 ## Features
@@ -54,24 +54,37 @@ yarn nextorm mongo:generate --model ${customPath} --output ${outputPath}
 import { Model, MongoTypes } from "@wyesoftware/nextorm";
 
 export const Database: Model = {
-    Users: {
-        _id: true // auto-generated ObjectId
-        timestamps: true, // createdAt, updatedAt
-        name: "users", // collection name in mongo
-        email: { // field name in mongo
-            type: MongoTypes.String, // field type
-            required: true, // field is required
-            unique: true, // field is unique
-            index: true // field is indexed
-        },
-        password: {
-            type: MongoTypes.String,
-            required: true
-        },
-        age: {
-            type: MongoTypes.Number,
-            required: false
-        },
-    }
-}
+  Users: {
+    // schema name
+    _id: true, // auto-generated ObjectId
+    timestamps: true, // createdAt, updatedAt
+    name: "users", // collection name in mongo
+    indexes: {
+      fields: {
+        email: "asc",
+        age: "desc",
+      },
+      unique: true,
+    },
+    email: {
+      // field name in mongo
+      type: MongoTypes.String, // field type
+      required: true, // field is required
+      unique: true, // field is unique
+      index: true, // field is indexed
+    },
+    password: {
+      type: MongoTypes.String,
+      required: true,
+    },
+    age: {
+      type: MongoTypes.Number,
+      required: false,
+    },
+  },
+};
 ```
+
+## Last update
+
+- Add support for multiple indexes in collection

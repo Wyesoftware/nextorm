@@ -68,6 +68,12 @@ export type CollectionOptions = {
   _id?: boolean;
   timestamps?: boolean;
   name?: string;
+  indexes?: {
+    fields: {
+      [key: string]: "asc" | "desc";
+    };
+    unique?: boolean;
+  }[];
 };
 
 export type Collection = CollectionKeys | CollectionOptions;

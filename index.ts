@@ -3,7 +3,7 @@ import { program } from "commander";
 import { generate } from "./engines/mongo";
 import { migrate } from "./engines/sqlite";
 
-program.version("0.0.1").name("nextorm").usage("[command]");
+program.version("0.0.2").name("nextorm").usage("[command]");
 program
   .command("sqlite:migrate")
   .description("Migrate sqlite database")
@@ -22,7 +22,7 @@ program
   .description("Generate mongoose model")
   .option("--model [model]", "model file path")
   .option("--output [output]", "output path for generated file")
-  .action(async (options, command) => {
+  .action(async (options) => {
     await generate({
       model: options.model,
       output: options.output,

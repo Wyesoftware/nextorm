@@ -2,6 +2,7 @@ import fs from "fs";
 import {
   Collection,
   CollectionKeys,
+  CollectionOptions,
   IGeneration,
   KeyOptions,
   Model,
@@ -53,6 +54,21 @@ export const generate = async ({ model, output }: IGeneration) => {
       if (collection.timestamps) options += `timestamps: true,\n`;
 
       data += `}, {\n${options}});\n\n`;
+
+      if (
+        (collection as CollectionOptions).indexes &&
+        (collection as CollectionOptions).indexes.length > 0
+      ) {
+        (collection as CollectionOptions).indexes.map((index) => {
+          const fields = Object.entries(index.fields)
+            .map(([key, value]) => `${key}: ${value === "asc" ? 1 : -1}`)
+            .join(", ");
+          data += `${collectionName}Schema.index({${fields}}${
+            index.unique ? ", { unique: true }" : ""
+          });\n`;
+        });
+      }
+
       data += `export const ${collectionName}Model = mongoose.model("${
         collection.name || collectionName
       }", ${collectionName}Schema);\n\n`;
@@ -61,13 +77,25 @@ export const generate = async ({ model, output }: IGeneration) => {
     let outputPath: string;
 
     if (output && fs.existsSync(output)) outputPath = output;
-    if (fs.existsSync(`${__dirname}/../../../../../../nextorm/generated`)) {
-      outputPath = `${__dirname}/../../../../../../nextorm/generated`;
+    if (model) {
+      const path = modelPath.replace(/(.*)\/.*/, "$1");
+      if (fs.existsSync(`${path}/generated`)) {
+        outputPath = `${path}/generated`;
+      } else {
+        fs.mkdirSync(`${path}/generated`, {
+          recursive: true,
+        });
+        outputPath = `${path}/generated`;
+      }
     } else {
-      fs.mkdirSync(`${__dirname}/../../../../../../nextorm/generated`, {
-        recursive: true,
-      });
-      outputPath = `${__dirname}/../../../../../../nextorm/generated`;
+      if (fs.existsSync(`${__dirname}/../../../../../../nextorm/generated`)) {
+        outputPath = `${__dirname}/../../../../../../nextorm/generated`;
+      } else {
+        fs.mkdirSync(`${__dirname}/../../../../../../nextorm/generated`, {
+          recursive: true,
+        });
+        outputPath = `${__dirname}/../../../../../../nextorm/generated`;
+      }
     }
 
     data = prettier.format(data, { parser: "typescript" });
@@ -76,6 +104,8 @@ export const generate = async ({ model, output }: IGeneration) => {
       encoding: "utf8",
       flag: "w",
     });
+
+    fs.rmSync(`${__dirname}/temp`, { recursive: true });
 
     console.log(`Generated Successfully`);
   } catch (error) {
@@ -88,7 +118,7 @@ const parseKeys = (collection: Collection) => {
   let data: string = "";
   keys.map((key) => {
     const collectionKey = (collection as CollectionKeys)[key] as KeyOptions;
-    if (typeof collectionKey === "object") {
+    if (typeof collectionKey === "object" && key !== "indexes") {
       data += `${key}: {\n`;
       if (
         typeof collectionKey.type === "object" &&
