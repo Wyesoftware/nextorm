@@ -30,8 +30,15 @@ export type Schema = {
 };
 
 export type IGeneration = {
-  model?: string;
-  output?: string;
+  importPath?: string;
+  exportPath?: string;
+};
+
+export type Mongo_IWrite = {
+  exportPath?: string | null;
+  importPath?: string | null;
+  modelPath: string;
+  data: string;
 };
 
 export const enum MongoTypes {

@@ -5,48 +5,19 @@ import {
   CollectionOptions,
   IGeneration,
   KeyOptions,
-  Model,
 } from "../../types";
-import prettier from "prettier";
-import { execSync } from "child_process";
+import { readModel, writeModel } from "./model";
 
-export const generate = async ({ model, output }: IGeneration) => {
+export const generate = async ({ importPath, exportPath }: IGeneration) => {
   try {
-    let modelPath: string;
-
-    if (model && fs.existsSync(model)) modelPath = model;
-    if (fs.existsSync(`${__dirname}/../../../../../../nextorm/model.ts`))
-      modelPath = `${__dirname}/../../../../../../nextorm/model.ts`;
-    if (fs.existsSync(`${__dirname}/../../../../../../nextorm/model.js`))
-      modelPath = `${__dirname}/../../../../../../nextorm/model.js`;
-
-    if (!modelPath) throw new Error("Model file not found");
-
-    let Database: Model;
-    try {
-      if (!fs.existsSync(`${__dirname}/temp`))
-        fs.mkdirSync(`${__dirname}/temp`);
-      if (modelPath.endsWith(".ts")) {
-        const path = modelPath.replace(/(.*)\/.*/, "$1");
-        const file = modelPath.replace(/.*\/(.*)/, "$1");
-        execSync(`cd ${path} && tsc ${file}`);
-        const newFilePath = modelPath.replace(/\.ts/, ".js");
-        fs.cpSync(`${newFilePath}`, `${__dirname}/temp/temp.js`);
-        fs.rmSync(newFilePath);
-      } else {
-        fs.cpSync(`${modelPath}`, `${__dirname}/temp/temp.js`);
-      }
-      Database = require("./temp/temp.js").Database;
-    } catch (error) {
-      throw new Error(`Error parsing model file: ${error.message}`);
-    }
+    const { database, modelPath } = await readModel(importPath);
 
     let data: string = "";
     data += `import mongoose, { Schema } from "mongoose";\n\n`;
-    const collections = Object.keys(Database);
+    const collections = Object.keys(database);
     collections.map((collectionName) => {
       data += `const ${collectionName}Schema = new Schema({\n`;
-      const collection = Database[collectionName] as Collection;
+      const collection = database[collectionName] as Collection;
       let options: string = "";
       data += parseKeys(collection);
 
@@ -74,37 +45,7 @@ export const generate = async ({ model, output }: IGeneration) => {
       }", ${collectionName}Schema);\n\n`;
     });
 
-    let outputPath: string;
-
-    if (output && fs.existsSync(output)) outputPath = output;
-    if (model) {
-      const path = modelPath.replace(/(.*)\/.*/, "$1");
-      if (fs.existsSync(`${path}/generated`)) {
-        outputPath = `${path}/generated`;
-      } else {
-        fs.mkdirSync(`${path}/generated`, {
-          recursive: true,
-        });
-        outputPath = `${path}/generated`;
-      }
-    } else {
-      if (fs.existsSync(`${__dirname}/../../../../../../nextorm/generated`)) {
-        outputPath = `${__dirname}/../../../../../../nextorm/generated`;
-      } else {
-        fs.mkdirSync(`${__dirname}/../../../../../../nextorm/generated`, {
-          recursive: true,
-        });
-        outputPath = `${__dirname}/../../../../../../nextorm/generated`;
-      }
-    }
-
-    data = prettier.format(data, { parser: "typescript" });
-
-    fs.writeFileSync(`${outputPath}/nextorm.ts`, data, {
-      encoding: "utf8",
-      flag: "w",
-    });
-
+    await writeModel({ exportPath, importPath, modelPath, data });
     fs.rmSync(`${__dirname}/temp`, { recursive: true });
 
     console.log(`Generated Successfully`);
